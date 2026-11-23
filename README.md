@@ -4,7 +4,7 @@
 
 ---
 
-[![Documentation](https://img.shields.io/badge/Docs-Complete_22_Specs-1B5E20?style=for-the-badge&logo=gitbook)](./docs/README.md)
+[![Documentation](https://img.shields.io/badge/Docs-Complete_24_Specs-1B5E20?style=for-the-badge&logo=gitbook)](./docs/README.md)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean_Architecture-2E7D32?style=for-the-badge)](./docs/10-system-architecture.md)
 [![Status](https://img.shields.io/badge/Status-Design_%26_MVP_Ready-E65100?style=for-the-badge)](./docs/08-mvp-scope.md)
 [![License](https://img.shields.io/badge/License-Proprietary-blue?style=for-the-badge)](#)
@@ -55,6 +55,8 @@
 | **19** | [هيكلية المشروع البرمجية](./docs/19-project-structure.md) | تنظيم مستودعات الموبايل والباك إند واللوحة بنمط Clean Architecture. |
 | **20** | [الجدول الزمني ومراحل التنفيذ](./docs/20-timeline.md) | خطة السبرنتات (10 أسابيع) ومخطط Gantt ومسؤوليات الفريق. |
 | **21** | [المقترح الاستثماري والتنفيذي](./docs/21-client-proposal.md) | ملخص الفرصة الاستثمارية والعائد والخطوات الفورية للإطلاق. |
+| **22** | [تدفقات المستخدمين التفصيلية (بائع ومشتري)](./docs/22-user-flows-detailed.md) | رحلات وتدفقات البائع والمشتري خطوة بخطوة والحالات الاستثنائية. |
+| **23** | [مواصفات مكونات الشاشات وتجربة UI/UX](./docs/23-screen-specifications-detailed.md) | هندسة كل شاشة وتفصيل عناصرها البصرية ومعايير مقاومة وهج الشمس. |
 | **README**| [فهرس دليل الوثائق](./docs/README.md) | الفهرس المرجعي لفريق العمل والتطوير. |
 
 ---
