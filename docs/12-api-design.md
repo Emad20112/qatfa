@@ -249,11 +249,60 @@
 }
 ```
 
+#### 4. الإبلاغ عن عرض مضلل (Report Misleading Drop)
+- **المسار:** `POST /products/:id/report`
+- **الوصول:** عام / مستخدم مسجل.
+- **جسم الطلب:**
+```json
+{
+  "reason": "MISLEADING_IMAGE",
+  "comment": "الصورة قديمة والقات في السوق مختلف تماماً عن المعروض",
+  "contactPhone": "+967771234567"
+}
+```
+- **الاستجابة:** `{"success": true, "message": "تم استلام البلاغ بنجاح وجارٍ مراجعته لحماية ثقة المجتمع"}`
+
+#### 5. بيانات المشاركة الذكية والرابط المباشر (Deep Link Share Data)
+- **المسار:** `GET /share/drop/:id`
+- **الوصول:** عام (مفتوح لمنصات التواصل)
+- **الاستجابة:** يُعيد بيانات OpenGraph متضمنة عنوان القطفة، السعر، الصورة المصغرة، ورابط فتح التطبيق المباشر `qatfa://drop/:id` أو رابط الويب `https://qatfa.ye/drop/:id`.
+
 ---
 
-### 2.5 وحدة الدليل الجغرافي المرجعي (Geographic Master Data)
+### 2.5 وحدة الدليل الجغرافي وخرائط الأسواق (Geo & Market Maps)
 
 #### 1. جلب الشجرة الجغرافية الكاملة (Get Geo Hierarchy Tree)
 - **المسار:** `GET /geo/tree`
 - **الوصول:** عام ومخزن مؤقتاً عبر CDN لمدة 24 ساعة (ETag / Cache-Control: max-age=86400).
 - **الاستجابة:** قائمة المحافظات، وتحت كل محافظة مديرياتها، وتحت كل مديرية أشهر أسواق القات فيها.
+
+#### 2. جلب خريطة السوق ومواقع المفارش (Get Market Map & Stalls)
+- **المسار:** `GET /markets/:id/map`
+- **الوصول:** عام
+- **الاستجابة (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "marketId": 14,
+    "marketName": "سوق علي محسن - صنعاء",
+    "centerLatitude": 15.3694,
+    "centerLongitude": 44.1782,
+    "boundaryPolygon": "...",
+    "stalls": [
+      {
+        "storeId": "018d9f12-4c2a-7111-9a10-f1e2d3c4b5a6",
+        "storeName": "مفرش العم صالح",
+        "stallNumber": "14",
+        "latitude": 15.3695,
+        "longitude": 44.1785,
+        "isVerifiedPhone": true,
+        "hasLiveDropToday": true,
+        "stockStatus": "AVAILABLE",
+        "latestDropTitle": "شامي أبيض فاخر",
+        "latestDropPrice": 12000
+      }
+    ]
+  }
+}
+```
