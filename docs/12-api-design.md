@@ -35,6 +35,7 @@
 #### 1. طلب رمز التحقق (Request OTP)
 - **المسار:** `POST /auth/request-otp`
 - **الوصول:** عام (Public) - خاضع لمحدد السرعة (3 طلبات / 10 دقائق).
+- **قيد فرادة رقم الهاتف (Phone Uniqueness):** في حال طلب التسجيل كحساب جديد وكان رقم الهاتف مسجلاً مسبقاً، ترفض العملية بـ `409 Conflict` لمنع تكرار الحسابات.
 - **جسم الطلب (Request Body):**
 ```json
 {
@@ -50,6 +51,15 @@
   "data": {
     "retryAfterSeconds": 60
   }
+}
+```
+- **استجابة الخطأ عند تكرار الرقم في التسجيل الجديد (409 Conflict):**
+```json
+{
+  "success": false,
+  "statusCode": 409,
+  "message": "رقم الهاتف مرتبط بحساب مسجل مسبقاً، يرجى تسجيل الدخول مباشرة",
+  "error": "PHONE_ALREADY_EXISTS"
 }
 ```
 
@@ -128,13 +138,55 @@
 }
 ```
 
-#### 2. تحديث حالة عمل المتجر اليوم (Open/Closed Toggle)
-- **المسار:** `PATCH /stores/my-store/status`
+#### 2. تحديث إعدادات وحالة عمل المتجر (Store Settings & Master Toggle)
+- **المسار:** `PATCH /stores/my-store/settings`
 - **الصلاحية:** مقاوتي صاحب متجر (`SELLER`).
+- **جسم الطلب (Request Body):**
+```json
+{
+  "isOpenToday": true,
+  "muteReviewNotifications": true
+}
+```
+- **الوصف:** 
+  - `isOpenToday`: المفتاح الرئيسي لحالة المتجر بالكامل (Master Store Toggle).
+  - `muteReviewNotifications`: تمكين المقاوتي من إيقاف إشعارات التقييمات حتى لا تزعجه أثناء ساعات الذروة في السوق.
+
+#### 3. جلب القوائم السريعة المجهزة للمفرش (Get Seller Presets)
+- **المسار:** `GET /stores/my-store/presets`
+- **الصلاحية:** `SELLER`
+- **الاستجابة (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "types": ["عنسي", "حوشب", "أرحبي", "همداني", "شامي"],
+    "grades": ["رووس", "عوارض", "قطل", "جمام", "سمين"],
+    "units": ["حبه", "كيلو", "قبضه"]
+  }
+}
+```
+
+#### 4. حفظ وتحديث القوائم السريعة المسبقة (Save Seller Presets)
+- **المسار:** `POST /stores/my-store/presets`
+- **الصلاحية:** `SELLER`
 - **جسم الطلب:**
 ```json
 {
-  "isOpenToday": true
+  "types": ["عنسي", "حوشب", "أرحبي"],
+  "grades": ["رووس", "عوارض", "قطل"],
+  "units": ["حبه", "كيلو", "قبضه"]
+}
+```
+
+#### 5. إضافة عنصر مخصص جديد للقوائم السريعة (Add Custom Preset Item)
+- **المسار:** `POST /stores/my-store/presets/custom`
+- **الصلاحية:** `SELLER` (متاح عبر الزر العلوي في شاشة الإعداد وشاشة النشر السريع)
+- **جسم الطلب:**
+```json
+{
+  "category": "QAT_TYPE",
+  "value": "غيلي فاخر"
 }
 ```
 
@@ -142,9 +194,16 @@
 
 ### 2.3 وحدة المنتجات والقطفة اليومية (Products / Drops Endpoints)
 
-#### 1. استعراض موجز قطفات اليوم للجمهور (Get Today's Drops Feed)
+#### 1. استعراض موجز قطفات اليوم والبحث الذكي بالميزانية (Get Drops & Budget Search)
 - **المسار:** `GET /products/drops`
-- **المعلمات:** `governorateId=1&qatType=همداني&stockStatus=AVAILABLE&page=1`
+- **المعلمات:**
+  - `governorateId=1`
+  - `marketId=14` (حصر البحث بنطاق سوق معين)
+  - `qatType=همداني`
+  - `budget=8000` (المبلغ المتوفر لدى المشتري نقداً)
+  - `budgetTolerance=0.10` (نسبة التفاوت المسموحة ±10% أي بين 7,200 و 8,800 ريال)
+  - `stockStatus=AVAILABLE`
+  - `page=1&limit=20`
 - **الاستجابة الناجحة (200 OK):**
 ```json
 {
@@ -155,16 +214,16 @@
       "id": "018d9f20-aa33-7222-8811-001122334455",
       "title": "همداني أبيض فاخر (قطفة الصباح)",
       "qatType": "همداني",
-      "qualityGrade": "SUPER",
-      "price": 12000,
+      "qualityGrade": "رووس",
+      "price": 8500,
       "currency": "YER_OLD",
-      "priceUnit": "حبة",
+      "priceUnit": "حبه",
       "stockStatus": "AVAILABLE",
+      "isAvailable": true,
       "harvestTime": "اليوم 06:30 صباحاً",
       "harvestRegion": "مزارع حاز - همدان",
       "images": [
-        "https://cdn.qatfa.ye/products/prod_101_1.webp",
-        "https://cdn.qatfa.ye/products/prod_101_2.webp"
+        "https://cdn.qatfa.ye/products/prod_101_1.webp"
       ],
       "publishedAt": "2026-11-22T12:15:00+03:00",
       "publishedTimeAgo": "منذ 15 دقيقة",
@@ -180,33 +239,83 @@
 }
 ```
 
-#### 2. نشر قطفة جديدة (Publish Daily Drop)
+#### 2. نشر قطفة جديدة سريعة (Publish Daily Drop)
 - **المسار:** `POST /products`
 - **الصلاحية:** `SELLER`
 - **جسم الطلب (Request Body):**
 ```json
 {
-  "title": "همداني أبيض فاخر قطفة الصباح",
-  "qatType": "همداني",
-  "qualityGrade": "SUPER",
+  "title": "عنسي رووس فاخر قطفة الصباح",
+  "qatType": "عنسي",
+  "qualityGrade": "رووس",
   "price": 12000,
   "currency": "YER_OLD",
-  "priceUnit": "حبة",
-  "harvestRegion": "همدان - حاز",
+  "priceUnit": "حبه",
+  "stockQuantity": 15,
+  "harvestRegion": "عنس - ذمار",
   "harvestTime": "صباح اليوم",
   "images": [
     "https://cdn.qatfa.ye/products/upload_9876.webp"
   ]
 }
 ```
-- **الاستجابة الناجحة (201 Created):** يعيد بيانات المنتج المنشور مضافاً إليه الطابع الزمني وحالة التوفر.
 
-#### 3. تغيير حالة التوفر الفوري (Toggle Stock)
+#### 3. التبديل المستقل لتوفر المنتج (Per-Product Availability Toggle)
+- **المسار:** `PATCH /products/:id/availability`
+- **الصلاحية:** `SELLER`
+- **جسم الطلب:**
+```json
+{
+  "isAvailable": false
+}
+```
+- **الوصف:** يتيح للمقاوتي تفعيل متوفر / غير متوفر لكل منتج على حدة بجانب المفتاح الرئيسي للمتجر.
+
+#### 4. تحديث حالة المخزون والإخفاء التلقائي عند النفاذ (Toggle Stock & Auto-Hide)
 - **المسار:** `PATCH /products/:id/stock`
+- **الصلاحية:** `SELLER`
 - **جسم الطلب:**
 ```json
 {
   "stockStatus": "SOLD_OUT"
+}
+```
+- **السلوك الآلي:** عند وصول الحالة لـ `SOLD_OUT` أو نفاذ الكمية:
+  1. يُخفى المنتج فوراً من التطبيق (`isActive = false`).
+  2. يُرسل إشعار Push للمقاوتي بنفاذ الكمية وإخفاء المنتج.
+
+#### 5. إجراء المقاوتي على إشعار نفاذ الكمية (Stock-Out Action)
+- **المسار:** `POST /products/:id/stock-out-action`
+- **الصلاحية:** `SELLER`
+- **جسم الطلب:**
+```json
+{
+  "action": "EDIT_QUANTITY",
+  "newQuantity": 10,
+  "newPrice": 12000
+}
+```
+*(أو إرسال `action: "CONFIRM_HIDE"` لتأكيد بقاء المنتج مخفياً)*
+
+#### 6. نشر إعلان سريع يومي بدون إعداد كامل (Daily Express Ad)
+- **المسار:** `POST /products/express-ad`
+- **الصلاحية:** `SELLER`
+- **قيد الاستخدام:** إعلان واحد في اليوم لكل مقاوتي (1 Ad / Day).
+- **جسم الطلب:**
+```json
+{
+  "description": "قات حوشب طازج قطفة الفجر نظيف وممتاز جداً متواجدين بسوق شميلة",
+  "price": 10000,
+  "currency": "YER_OLD",
+  "imageUrl": "https://cdn.qatfa.ye/express/exp_101.webp"
+}
+```
+- **الاستجابة عند تجاوز الحد اليومي (429 Too Many Requests):**
+```json
+{
+  "success": false,
+  "statusCode": 429,
+  "message": "لقد استهلكت إعلانك السريع لليوم (الحد: إعلان واحد في اليوم)، أكمل إعداد متجرك للنشر غير المحدود"
 }
 ```
 
@@ -249,9 +358,12 @@
 }
 ```
 
-#### 4. الإبلاغ عن عرض مضلل (Report Misleading Drop)
+#### 4. الإبلاغ عن عرض مضلل ومنع التكرار (Report Misleading Drop & Anti-Abuse)
 - **المسار:** `POST /products/:id/report`
-- **الوصول:** عام / مستخدم مسجل.
+- **الوصول:** عام / مستخدم مسجل (خاضع لقيد منع التكرار الصارم).
+- **قواعد مكافحة الإساءة والنزاهة:**
+  1. **منع التكرار (Deduplication):** لا يمكن لنفس المستخدم أو نفس المعرف تقديم أكثر من بلاغ واحد على نفس القطفة أو نفس التاجر.
+  2. **الرقابة اليدوية حصراً (No Auto-Ban):** البلاغات لا تتسبب في أي إيقاف آلي لحساب التاجر أو العرض، بل تُحال إلى لوحة تحكم المشرفين وفريق الدعم للتحقق البشري والمكالمة الميدانية.
 - **جسم الطلب:**
 ```json
 {
@@ -260,7 +372,23 @@
   "contactPhone": "+967771234567"
 }
 ```
-- **الاستجابة:** `{"success": true, "message": "تم استلام البلاغ بنجاح وجارٍ مراجعته لحماية ثقة المجتمع"}`
+- **الاستجابة الناجحة لأول بلاغ (200 OK):**
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "تم استلام البلاغ بنجاح وجارٍ فحصه من فريق الدعم لحماية ثقة السوق"
+}
+```
+- **استجابة محاولة تكرار البلاغ من نفس المستخدم (409 Conflict):**
+```json
+{
+  "success": false,
+  "statusCode": 409,
+  "message": "لقد قمت بتقديم بلاغ مسبقاً عن هذا العرض/المستخدم، وهو قيد المراجعة لدى فريق الإدارة",
+  "error": "DUPLICATE_REPORT_NOT_ALLOWED"
+}
+```
 
 #### 5. بيانات المشاركة الذكية والرابط المباشر (Deep Link Share Data)
 - **المسار:** `GET /share/drop/:id`
