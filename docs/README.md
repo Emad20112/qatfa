@@ -38,3 +38,7 @@
 | **21** | [21-client-proposal.md](./21-client-proposal.md) | **المقترح الاستثماري والتنفيذي:** ملخص الفرصة الاستثمارية والعائد والخطوات الفورية للإطلاق. |
 | **22** | [22-user-flows-detailed.md](./22-user-flows-detailed.md) | **تدفقات المستخدمين التفصيلية:** رحلات وتدفقات البائع والمشتري خطوة بخطوة والحالات الاستثنائية. |
 | **23** | [23-screen-specifications-detailed.md](./23-screen-specifications-detailed.md) | **مواصفات مكونات الشاشات بالتفصيل:** هندسة كل شاشة وتفصيل عناصرها البصرية ومعايير وهج الشمس. |
+| **24** | [24-app-update-and-distribution-strategy.md](./24-app-update-and-distribution-strategy.md) | **استراتيجية التحديثات المستمرة والتوزيع البديل:** آلية إيصال التحديثات عبر تيليجرام والـ APK والموقع مع التثبيت الداخلي والانتقال للمتاجر. |
+| **25** | [25-data-flow-diagrams.md](./25-data-flow-diagrams.md) | **مخططات تدفق البيانات للعمليات (DFD):** تفكيك حركة وتدفق البيانات على ثلاث مستويات (المستوى 0 و 1 و 2). |
+| **26** | [26-complete-erd.md](./26-complete-erd.md) | **مخطط علاقات الكيانات الكامل (ERD):** المخطط المرئي الشامل وهياكل كافة جداول النظام في PostgreSQL. |
+| **27** | [27-update-resilience-and-failure-safeguards.md](./27-update-resilience-and-failure-safeguards.md) | **ميثاق استقرار التحديثات ومعالجة أعطال Flutter والـ Backend:** القواعد الهندسية الصارمة لمنع الانهيار ومشاكل الـ API والمفاتيح. |
