@@ -1,0 +1,20 @@
+{
+  "name": "qatfa-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "منصة قطفة - شبكة تجارة واكتشاف حية لسوق القات في الجمهورية اليمنية",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm --filter ./apps/api run build",
+    "start:api": "pnpm --filter ./apps/api run start:dev",
+    "lint": "pnpm --filter ./apps/api run lint",
+    "test": "pnpm --filter ./apps/api run test"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "pnpm@12.6.0"
+}
