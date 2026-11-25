@@ -8,13 +8,14 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm --filter ./apps/api run build",
-    "start:api": "pnpm --filter ./apps/api run start:dev",
-    "lint": "pnpm --filter ./apps/api run lint",
-    "test": "pnpm --filter ./apps/api run test"
+    "dev": "npm run build --workspace=packages/shared-types && npm run build --workspace=apps/admin && npm run dev --workspace=apps/api",
+    "build": "npm run build --workspace=packages/shared-types && npm run build --workspace=apps/admin && npm run build --workspace=apps/api",
+    "start": "node apps/api/dist/main.js",
+    "start:api": "npm run start:dev --workspace=apps/api",
+    "lint": "npx tsc --noEmit -p apps/api/tsconfig.json && npm run lint --workspace=apps/admin",
+    "test": "npm run test --workspace=apps/api"
   },
   "devDependencies": {
     "typescript": "^5.7.3"
-  },
-  "packageManager": "pnpm@12.6.0"
+  }
 }

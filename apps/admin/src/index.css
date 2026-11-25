@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@layer base {
+  html,
+  body {
+    font-family: "Cairo", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+    background-color: #f6f8fa;
+    color: #1a202c;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Custom subtle scrollbars matching Qatfa emerald palette */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 76, 42, 0.22);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 76, 42, 0.38);
+}

@@ -5,6 +5,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../database/entities/user.entity";
+import { resolveJwtSecret } from "../../common/utils/jwt-secret";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,10 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>(
-        "JWT_SECRET",
-        "qatfa_super_jwt_secret_key_production_grade_967_yemen",
-      ),
+      secretOrKey: resolveJwtSecret(configService),
     });
   }
 

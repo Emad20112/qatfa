@@ -1,17 +1,18 @@
-import { NestFactory, Reflector } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
-import { ValidationPipe, Logger } from "@nestjs/common";
+import { ValidationPipe, Logger, RequestMethod } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "@fastify/helmet";
+import fastifyStatic from "@fastify/static";
 import { AppModule } from "./app.module";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
 import { VersionCheckGuard } from "./common/guards/version-check.guard";
-import { RolesGuard } from "./common/guards/roles.guard";
+import { resolveAdminDistPath } from "./common/spa.controller";
 
 async function bootstrap() {
   const logger = new Logger("QatfaBootstrap");
@@ -26,7 +27,7 @@ async function bootstrap() {
   );
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>("PORT", 3000);
+  const port = parseInt(String(configService.get("PORT", 3000)), 10) || 3000;
   const host = configService.get<string>("HOST", "0.0.0.0");
   const apiPrefix = configService.get<string>("API_PREFIX", "api/v1");
 
@@ -35,6 +36,17 @@ async function bootstrap() {
     contentSecurityPolicy: false,
   });
 
+  // خدمة ملفات لوحة التحكم الإدارية الثابتة عند توفر البناء
+  const adminDistPath = resolveAdminDistPath();
+  if (adminDistPath) {
+    await app.register(fastifyStatic, {
+      root: adminDistPath,
+      prefix: "/",
+      wildcard: false,
+      index: false,
+    });
+  }
+
   // تفعيل الـ CORS لتطبيقات الويب والموبايل
   app.enableCors({
     origin: true,
@@ -42,11 +54,24 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // بادئة المسار الموحدة للمنصة
-  app.setGlobalPrefix(apiPrefix);
+  // بادئة المسار الموحدة للمنصة مع استثناء مسارات لوحة التحكم
+  app.setGlobalPrefix(apiPrefix, {
+    exclude: [
+      { path: "/", method: RequestMethod.GET },
+      { path: "/users", method: RequestMethod.GET },
+      { path: "/sellers", method: RequestMethod.GET },
+      { path: "/verifications", method: RequestMethod.GET },
+      { path: "/markets", method: RequestMethod.GET },
+      { path: "/bookings", method: RequestMethod.GET },
+      { path: "/reports", method: RequestMethod.GET },
+      { path: "/analytics", method: RequestMethod.GET },
+      { path: "/settings", method: RequestMethod.GET },
+      { path: "/audit-logs", method: RequestMethod.GET },
+      { path: "/support", method: RequestMethod.GET },
+    ],
+  });
 
   // الفلاتر والحراس والتحويلات المعتمدة
-  const reflector = app.get(Reflector);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -56,10 +81,7 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalGuards(
-    new VersionCheckGuard(configService),
-    new RolesGuard(reflector),
-  );
+  app.useGlobalGuards(new VersionCheckGuard(configService));
 
   // إعداد توثيق Swagger للـ APIs
   const swaggerConfig = new DocumentBuilder()
@@ -76,7 +98,7 @@ async function bootstrap() {
 
   await app.listen(port, host);
   logger.log(
-    `🌿 منصة قطفة - خادم الواجهات يعمل بنجاح على: http://${host}:${port}/${apiPrefix}`,
+    `🌿 منصة قطفة - لوحة التحكم والخادم يعملان على: http://${host}:${port}/`,
   );
   logger.log(`📑 توثيق الـ Swagger متاح على: http://${host}:${port}/docs`);
 }
