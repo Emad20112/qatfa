@@ -17,3 +17,28 @@ __pycache__/
 .idea/
 *.swp
 *.swo
+
+# Node & Package Managers
+node_modules/
+.pnpm-store/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Environment & Secrets (Crucial Security)
+.env*
+!.env.example
+*.pem
+*.key
+*.cert
+*.jks
+*.keystore
+key.properties
+
+# Docker & Temp
+.docker/
+docker-data/
+*.pid
+*.seed
+*.sublime-project
