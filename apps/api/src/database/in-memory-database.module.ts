@@ -290,6 +290,7 @@ class InMemoryStore {
 class InMemoryQueryBuilder<T extends Record<string, any>> {
   private readonly joins: Array<{ path: string; alias: string }> = [];
   private readonly predicates: Array<(item: T) => boolean> = [];
+  private readonly orderBys: Array<{ field: string; dir: "ASC" | "DESC" }> = [];
   private orderField: string | null = null;
   private orderDir: "ASC" | "DESC" = "ASC";
   private takeLimit: number | null = null;
@@ -437,8 +438,15 @@ class InMemoryQueryBuilder<T extends Record<string, any>> {
   }
 
   orderBy(field: string, dir: "ASC" | "DESC" = "ASC"): this {
+    this.orderBys.length = 0;
+    this.orderBys.push({ field, dir });
     this.orderField = field;
     this.orderDir = dir;
+    return this;
+  }
+
+  addOrderBy(field: string, dir: "ASC" | "DESC" = "ASC"): this {
+    this.orderBys.push({ field, dir });
     return this;
   }
 
@@ -469,17 +477,20 @@ class InMemoryQueryBuilder<T extends Record<string, any>> {
       this.predicates.every((fn) => fn(item)),
     );
 
-    if (this.orderField) {
-      const fieldPath = this.orderField;
-      const dir = this.orderDir === "DESC" ? -1 : 1;
+    if (this.orderBys.length > 0) {
       filtered.sort((a, b) => {
-        const va = this.resolvePath(a, fieldPath);
-        const vb = this.resolvePath(b, fieldPath);
-        if (va instanceof Date && vb instanceof Date) {
-          return (va.getTime() - vb.getTime()) * dir;
+        for (const order of this.orderBys) {
+          const va = this.resolvePath(a, order.field);
+          const vb = this.resolvePath(b, order.field);
+          const dir = order.dir === "DESC" ? -1 : 1;
+          if (va instanceof Date && vb instanceof Date) {
+            const diff = (va.getTime() - vb.getTime()) * dir;
+            if (diff !== 0) return diff;
+          } else if (va !== vb) {
+            return (va > vb ? 1 : -1) * dir;
+          }
         }
-        if (va === vb) return 0;
-        return va > vb ? dir : -dir;
+        return 0;
       });
     }
 
