@@ -42,3 +42,4 @@ docker-data/
 *.pid
 *.seed
 *.sublime-project
+docs/architecture/performance/scratch/
