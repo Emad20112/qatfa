@@ -1,4 +1,4 @@
-package ye.qatfa.qatfa
+package ye.qatfa.app
 
 import io.flutter.embedding.android.FlutterActivity
 
