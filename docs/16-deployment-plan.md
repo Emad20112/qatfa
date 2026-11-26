@@ -2,49 +2,44 @@
 
 ---
 
-## 1. طوبولوجيا البنية التحتية (Infrastructure Topology)
+## 1. طوبولوجيا البنية التحتية المحدثة (Modern Serverless Cloud Topology)
 
-تعتمد منصة قطفة على بنية تحتية سحابية اقتصادية ومرنة بنظام الحاويات (Docker Containers)، مما يتيح تشغيل المنصة بكفاءة عالية على خادم افتراضي عالي الأداء (Hetzner Cloud VPS) في البداية مع قابلية التوسع الأفقي لاحقاً.
+تعتمد منصة قطفة الآن على بنية سحابية حديثة منخفضة التكاليف وعالية المرونة تجمع بين:
+1. **قاعدة البيانات:** **Supabase** (PostgreSQL 16 المدارة مع دعم الـ Connection Pooling والنسخ الاحتياطي التلقائي).
+2. **استضافة الباك إند ولوحة التحكم:** **Vercel** بنظام Serverless / Edge لضمان استجابة عالمية فائقة وتكلفة تبدأ من الصفر (Serverless Pay-as-you-grow).
+3. **تخزين الوسائط (الصور والفيديوهات):** **Cloudflare R2** مع شبكة التوزيع العالمية **Cloudflare CDN**، لتوفير أسرع تحميل دون تكاليف نقل بيانات (Zero Egress Fees).
+4. **التطوير المحلي والنسخ المتماثلة:** **Docker Compose** لبيئة الاختبار والتشغيل المتطابقة للمطورين.
 
 ```mermaid
 graph TD
-    subgraph Internet["شبكة الإنترنت العامة"]
-        UserDevice["هواتف المستخدمين"]
-        AdminBrowser["متصفح الإدارة"]
+    subgraph Clients["تطبيقات العملاء"]
+        UserDevice["هواتف المستخدمين (Flutter App)"]
+        AdminBrowser["متصفح الإدارة (React Admin)"]
     end
 
-    subgraph EdgeLayer["طبقة الحماية والتسريع"]
-        CF["Cloudflare (DNS, SSL, WAF, Edge Caching)"]
+    subgraph EdgeLayer["شبكة Cloudflare العالمية"]
+        CFCDN["Cloudflare CDN & Edge Caching"]
+        R2["Cloudflare R2 Storage (صور وفيديوهات القات)"]
     end
 
-    subgraph HostServer["خادم Hetzner Cloud VPS (Ubuntu 22.04 LTS)"]
-        Nginx["Nginx Reverse Proxy & SSL Gateway"]
-        
-        subgraph DockerNetwork["شبكة Docker الداخلية"]
-            API1["حاوية NestJS API (Primary)"]
-            Worker["حاوية المهام الخلفية (BullMQ Worker)"]
-            PG[(حاوية PostgreSQL 16 DB)]
-            RD[(حاوية Redis 7 Cache & Queue)]
-        end
+    subgraph VercelEdge["منصة Vercel السحابية"]
+        VercelAPI["NestJS API (Serverless Engine)"]
+        VercelAdmin["لوحة التحكم الإدارية (Vite / React)"]
     end
 
-    subgraph ExternalCloud["الخدمات السحابية الخارجية"]
-        R2["Cloudflare R2 Object Storage (الوسائط والنسخ الاحتياطي)"]
-        FCM["Firebase Cloud Messaging (إشعارات الموبايل)"]
-        Sentry["Sentry Cloud (مراقبة الأخطاء والانهيارات)"]
+    subgraph SupabaseCloud["منظومة Supabase"]
+        SupaDB[(قاعدة بيانات PostgreSQL 16)]
+        SupaPooler["Connection Pooler (PgBouncer)"]
     end
 
-    UserDevice --> CF
-    AdminBrowser --> CF
-    CF --> Nginx
-    Nginx --> API1
-    API1 --> PG
-    API1 --> RD
-    API1 --> Worker
-    Worker --> RD
-    API1 --> R2
-    Worker --> FCM
-    API1 -.-> Sentry
+    UserDevice --> CFCDN
+    UserDevice --> VercelAPI
+    AdminBrowser --> VercelAdmin
+    AdminBrowser --> VercelAPI
+    VercelAPI --> SupaPooler
+    SupaPooler --> SupaDB
+    VercelAPI --> R2
+    CFCDN --> R2
 ```
 
 ---
