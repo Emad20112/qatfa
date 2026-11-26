@@ -11,7 +11,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@qatfa/shared-types": "*",
+    "@qatfa/shared-types": "workspace:*",
     "@tanstack/react-query": "^5.66.0",
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",
