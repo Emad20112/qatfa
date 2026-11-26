@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from "typeorm";
 import {
   Currency,
@@ -16,6 +17,11 @@ import {
 import { Store } from "./store.entity";
 
 @Entity("products")
+@Index(["storeId", "isActive"])
+@Index(["isActive", "stockStatus", "createdAt"])
+@Index(["price", "isActive", "stockStatus"])
+@Index(["dropDate", "isActive", "stockStatus"])
+@Index(["qatType"])
 export class Product {
   @PrimaryGeneratedColumn("uuid")
   id: string;
@@ -88,6 +94,21 @@ export class Product {
 
   @Column({ type: "simple-array", nullable: true })
   images: string[];
+
+  @Column({
+    name: "blur_hash",
+    type: "varchar",
+    length: 60,
+    nullable: true,
+  })
+  blurHash: string;
+
+  @Column({
+    name: "drop_date",
+    type: "date",
+    default: () => "CURRENT_DATE",
+  })
+  dropDate: string;
 
   @Column({ name: "is_active", type: "boolean", default: true })
   isActive: boolean;

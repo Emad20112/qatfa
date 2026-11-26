@@ -41,4 +41,13 @@ export class StoresController {
   async updateMyStore(@CurrentUser() user: User, @Body() body: any) {
     return this.storesService.updateMyStore(user.id, body);
   }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Patch("my-store/toggle-status")
+  async toggleStatus(
+    @CurrentUser() user: User,
+    @Body("isOpen") isOpen: boolean,
+  ) {
+    return this.storesService.toggleOpenStatus(user.id, isOpen);
+  }
 }

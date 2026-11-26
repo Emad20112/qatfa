@@ -8,6 +8,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  Index,
 } from "typeorm";
 import { User } from "./user.entity";
 import { Market } from "./market.entity";
@@ -15,6 +16,9 @@ import { Product } from "./product.entity";
 import { Review } from "./review.entity";
 
 @Entity("stores")
+@Index(["marketId", "isOpenNow"])
+@Index(["storeName"])
+@Index(["latitude", "longitude"])
 export class Store {
   @PrimaryGeneratedColumn("uuid")
   id: string;
@@ -73,6 +77,17 @@ export class Store {
 
   @Column({ name: "is_open_now", type: "boolean", default: true })
   isOpenNow: boolean;
+
+  @Column({ name: "phone_call", type: "varchar", length: 20, nullable: true })
+  phoneCall: string;
+
+  @Column({
+    name: "phone_whatsapp",
+    type: "varchar",
+    length: 20,
+    nullable: true,
+  })
+  phoneWhatsapp: string;
 
   @Column({
     name: "average_rating",

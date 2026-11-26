@@ -5,11 +5,13 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { District } from "./district.entity";
 import { Store } from "./store.entity";
 
 @Entity("markets")
+@Index(["districtId", "isActive"])
 export class Market {
   @PrimaryGeneratedColumn("increment")
   id: number;

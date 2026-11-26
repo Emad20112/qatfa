@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AllEntities } from "./database";
+import { RedisModule } from "./common/redis/redis.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
 import { StoresModule } from "./modules/stores/stores.module";
@@ -27,9 +28,16 @@ import { SystemModule } from "./modules/system/system.module";
         entities: AllEntities,
         synchronize: config.get<string>("DB_SYNC", "true") === "true",
         logging: config.get<string>("DB_LOGGING", "false") === "true",
+        extra: {
+          max: 30,
+          min: 5,
+          idleTimeoutMillis: 10000,
+          connectionTimeoutMillis: 3000,
+        },
       }),
       inject: [ConfigService],
     }),
+    RedisModule,
     AuthModule,
     UsersModule,
     StoresModule,

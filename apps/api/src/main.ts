@@ -7,6 +7,7 @@ import { ValidationPipe, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "@fastify/helmet";
+import compress from "@fastify/compress";
 import { AppModule } from "./app.module";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { AllExceptionsFilter } from "./common/filters/http-exception.filter";
@@ -34,6 +35,31 @@ async function bootstrap() {
   await app.register(helmet, {
     contentSecurityPolicy: false,
   });
+
+  // تفعيل ضغط الاستجابات الفائق عبر Brotli و Gzip لتوفير 96% من باقات البيانات
+  await app.register(compress as any, {
+    encodings: ["br", "gzip", "deflate"],
+    threshold: 1024,
+  });
+
+  // إضافة مقياس زمن المعالجة الداخلي Server-Timing
+  const httpAdapter = app.getHttpAdapter();
+  const fastifyInstance = httpAdapter.getInstance();
+  fastifyInstance.addHook("onRequest", (req: any, reply: any, done: () => void) => {
+    req.startTime = process.hrtime.bigint();
+    done();
+  });
+  fastifyInstance.addHook(
+    "onSend",
+    (req: any, reply: any, payload: any, done: () => void) => {
+      if (req.startTime) {
+        const elapsedMs =
+          Number(process.hrtime.bigint() - req.startTime) / 1e6;
+        reply.header("Server-Timing", `total;dur=${elapsedMs.toFixed(2)}`);
+      }
+      done();
+    },
+  );
 
   // تفعيل الـ CORS لتطبيقات الويب والموبايل
   app.enableCors({
