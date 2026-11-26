@@ -4,10 +4,10 @@ import { GeoController } from "./geo.controller";
 import { Governorate } from "../../database/entities/governorate.entity";
 import { District } from "../../database/entities/district.entity";
 import { Market } from "../../database/entities/market.entity";
-import { InMemoryDatabaseModule } from "../../database/in-memory-database.module";
+import { DatabaseModule } from "../../database/database.module";
 
 @Module({
-  imports: [InMemoryDatabaseModule.forFeature([Governorate, District, Market])],
+  imports: [DatabaseModule.forFeature([Governorate, District, Market])],
   controllers: [GeoController],
   providers: [GeoService],
   exports: [GeoService],

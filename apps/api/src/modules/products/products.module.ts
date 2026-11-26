@@ -3,10 +3,10 @@ import { ProductsService } from "./products.service";
 import { ProductsController } from "./products.controller";
 import { Product } from "../../database/entities/product.entity";
 import { Store } from "../../database/entities/store.entity";
-import { InMemoryDatabaseModule } from "../../database/in-memory-database.module";
+import { DatabaseModule } from "../../database/database.module";
 
 @Module({
-  imports: [InMemoryDatabaseModule.forFeature([Product, Store])],
+  imports: [DatabaseModule.forFeature([Product, Store])],
   controllers: [ProductsController],
   providers: [ProductsService],
   exports: [ProductsService],

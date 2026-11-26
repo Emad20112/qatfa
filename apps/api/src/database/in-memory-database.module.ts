@@ -300,8 +300,41 @@ class InMemoryQueryBuilder<T extends Record<string, any>> {
     private readonly alias: string,
   ) {}
 
+  innerJoin(path: string, alias: string): this {
+    this.joins.push({ path, alias });
+    return this;
+  }
+
+  leftJoin(path: string, alias: string): this {
+    this.joins.push({ path, alias });
+    return this;
+  }
+
+  innerJoinAndSelect(path: string, alias: string): this {
+    this.joins.push({ path, alias });
+    return this;
+  }
+
   leftJoinAndSelect(path: string, alias: string): this {
     this.joins.push({ path, alias });
+    return this;
+  }
+
+  select(fields?: string | string[]): this {
+    return this;
+  }
+
+  addSelect(fields?: string | string[]): this {
+    return this;
+  }
+
+  limit(limit: number): this {
+    this.takeLimit = limit;
+    return this;
+  }
+
+  offset(offset: number): this {
+    this.skipOffset = offset;
     return this;
   }
 
@@ -323,6 +356,23 @@ class InMemoryQueryBuilder<T extends Record<string, any>> {
 
     const trimmed = condition.trim();
 
+    // Handle Keyset pagination cursor tuple: (createdAt, id) < (:cursorDate, :cursorId)
+    const cursorMatch = trimmed.match(
+      /\((?:[a-zA-Z0-9_.]+\.)?createdAt,\s*(?:[a-zA-Z0-9_.]+\.)?id\)\s*<\s*\(:cursorDate,\s*:cursorId\)/i,
+    );
+    if (cursorMatch) {
+      const cursorDate = new Date(params.cursorDate).getTime();
+      const cursorId = Number(params.cursorId);
+      this.predicates.push((item: any) => {
+        const itemDate = new Date(item.createdAt).getTime();
+        const itemId = Number(item.id);
+        if (itemDate < cursorDate) return true;
+        if (itemDate === cursorDate && itemId < cursorId) return true;
+        return false;
+      });
+      return this;
+    }
+
     // Handle BETWEEN: "product.price BETWEEN :min AND :max"
     const betweenMatch = trimmed.match(
       /^([a-zA-Z0-9_.]+)\s+BETWEEN\s+:([a-zA-Z0-9_]+)\s+AND\s+:([a-zA-Z0-9_]+)$/i,
@@ -334,6 +384,23 @@ class InMemoryQueryBuilder<T extends Record<string, any>> {
       this.predicates.push((item) => {
         const val = Number(this.resolvePath(item, fieldPath));
         return !Number.isNaN(val) && val >= min && val <= max;
+      });
+      return this;
+    }
+
+    // Handle comparison operators: <=, >=, <, >
+    const compMatch = trimmed.match(/^([a-zA-Z0-9_.]+)\s*(<=|>=|<|>)\s*:([a-zA-Z0-9_]+)$/);
+    if (compMatch) {
+      const [, fieldPath, op, paramKey] = compMatch;
+      const target = Number(params[paramKey]);
+      this.predicates.push((item) => {
+        const val = Number(this.resolvePath(item, fieldPath));
+        if (Number.isNaN(val)) return false;
+        if (op === "<=") return val <= target;
+        if (op === ">=") return val >= target;
+        if (op === "<") return val < target;
+        if (op === ">") return val > target;
+        return false;
       });
       return this;
     }
@@ -433,6 +500,14 @@ class InMemoryQueryBuilder<T extends Record<string, any>> {
   async getOne(): Promise<T | null> {
     const [items] = await this.take(1).getManyAndCount();
     return items[0] ?? null;
+  }
+
+  async getRawMany(): Promise<any[]> {
+    return this.getMany();
+  }
+
+  async getRawOne(): Promise<any | null> {
+    return this.getOne();
   }
 
   private resolvePath(obj: any, path: string): any {

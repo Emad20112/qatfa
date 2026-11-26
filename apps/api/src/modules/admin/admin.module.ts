@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { AuthModule } from "../auth/auth.module";
-import { InMemoryDatabaseModule } from "../../database/in-memory-database.module";
+import { DatabaseModule } from "../../database/database.module";
 import { User } from "../../database/entities/user.entity";
 import { Store } from "../../database/entities/store.entity";
 import { Product } from "../../database/entities/product.entity";
@@ -14,7 +14,7 @@ import { AdminService } from "./admin.service";
 @Module({
   imports: [
     AuthModule,
-    InMemoryDatabaseModule.forFeature([
+    DatabaseModule.forFeature([
       User,
       Store,
       Product,

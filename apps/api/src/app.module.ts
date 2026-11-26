@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { InMemoryDatabaseModule } from "./database/in-memory-database.module";
+import { DatabaseModule } from "./database/database.module";
 import { RedisModule } from "./common/redis/redis.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
@@ -9,6 +9,7 @@ import { ProductsModule } from "./modules/products/products.module";
 import { GeoModule } from "./modules/geo/geo.module";
 import { SystemModule } from "./modules/system/system.module";
 import { AdminModule } from "./modules/admin/admin.module";
+import { StorageModule } from "./modules/storage/storage.module";
 import { SpaController } from "./common/spa.controller";
 
 @Module({
@@ -17,7 +18,7 @@ import { SpaController } from "./common/spa.controller";
       isGlobal: true,
       envFilePath: [".env", "apps/api/.env"],
     }),
-    InMemoryDatabaseModule.forRoot(),
+    DatabaseModule.forRoot(),
     RedisModule,
     AuthModule,
     UsersModule,
@@ -26,6 +27,7 @@ import { SpaController } from "./common/spa.controller";
     GeoModule,
     SystemModule,
     AdminModule,
+    StorageModule,
   ],
   controllers: [SpaController],
 })
