@@ -344,4 +344,16 @@ export const adminApi = {
       method: "PATCH",
       body: JSON.stringify(payload),
     }),
+  getOtpLogs: () => apiFetch<OtpLogRecord[]>("/admin/auth/otp-logs"),
 };
+
+export interface OtpLogRecord {
+  id: string;
+  phoneNumber: string;
+  fullName?: string;
+  code: string;
+  createdAt: string;
+  expiresAt: string;
+  isUsed: boolean;
+  status: "ACTIVE" | "EXPIRED" | "USED";
+}

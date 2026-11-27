@@ -15,6 +15,7 @@ import { AnalyticsPage } from "./features/analytics/AnalyticsPage";
 import { SettingsPage } from "./features/settings/SettingsPage";
 import { AuditLogsPage } from "./features/audit-logs/AuditLogsPage";
 import { SupportPage } from "./features/support/SupportPage";
+import { OtpMonitorPage } from "./features/otp/OtpMonitorPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +46,7 @@ const AdminRouterShell: React.FC = () => {
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/audit-logs" element={<AuditLogsPage />} />
+        <Route path="/otp-monitor" element={<OtpMonitorPage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

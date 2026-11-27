@@ -10,6 +10,7 @@ import {
   Headphones,
   History,
   Home,
+  KeyRound,
   LogOut,
   MapPin,
   Maximize2,
@@ -59,6 +60,11 @@ const NAV_ITEMS: NavItem[] = [
     path: "/bookings",
     label: "إدارة الحجوزات",
     icon: <CalendarCheck className="w-4 h-4" />,
+  },
+  {
+    path: "/otp-monitor",
+    label: "رموز التحقق (OTP)",
+    icon: <KeyRound className="w-4 h-4 text-emerald-300" />,
   },
   {
     path: "/reports",
