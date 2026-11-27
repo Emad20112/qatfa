@@ -56,7 +56,7 @@ class MarketSummaryCard extends StatelessWidget {
                           ? Image.network(
                               imageUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildPlaceholder(colors),
+                              errorBuilder: (_, _, _) => _buildPlaceholder(colors),
                             )
                           : _buildPlaceholder(colors),
                     ),
