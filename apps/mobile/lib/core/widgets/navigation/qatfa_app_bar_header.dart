@@ -77,49 +77,19 @@ class QatfaAppBarHeader extends StatelessWidget {
                     ),
                   ),
 
-                  // شعار قطفة المركزي الرسمي
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: Image.asset(
-                          'assets/images/qatfa_logo.png',
-                          height: 28,
-                          width: 38,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Icon(
-                            Icons.eco_rounded,
-                            color: Color(0xFF4ADE80),
-                            size: 24,
-                          ),
-                        ),
+                  // شعار قطفة المركزي الرسمي (الوحيد بدون تكرار)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.asset(
+                      'assets/images/qatfa_logo.png',
+                      height: 34,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.eco_rounded,
+                        color: Color(0xFF4ADE80),
+                        size: 28,
                       ),
-                      const SizedBox(width: AppSpacing.s6),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text(
-                            'قـطـفـة',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          Text(
-                            '— QATFA —',
-                            style: TextStyle(
-                              fontSize: 8.5,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFBBF7D0),
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
 
                   // جرس الإشعارات مع عداد التنبيهات

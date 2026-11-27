@@ -4,6 +4,7 @@ import 'package:qatfa/core/theme/app_theme.dart';
 import 'package:qatfa/data/models/qatfa_models.dart';
 import 'package:qatfa/data/repositories/qatfa_repositories.dart';
 import 'package:qatfa/data/services/mock_qatfa_data.dart';
+import 'package:qatfa/core/widgets/navigation/qatfa_app_bar_header.dart';
 import 'package:qatfa/ui/features/drop_detail/views/drop_detail_screen.dart';
 import 'package:qatfa/ui/features/home/view_models/drops_feed_view_model.dart';
 import 'package:qatfa/ui/features/home/views/home_screen.dart';
@@ -82,7 +83,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('قـطـفـة'), findsOneWidget);
+      expect(find.byType(QatfaAppBarHeader), findsOneWidget);
       expect(find.text('قطفة مميزة من أجود الأنواع'), findsOneWidget);
       expect(find.text('مقاوتة موثقون ميدانياً'), findsOneWidget);
       expect(find.text('همداني'), findsOneWidget);

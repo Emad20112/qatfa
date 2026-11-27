@@ -54,11 +54,10 @@ export const AdminLoginView: React.FC = () => {
               alt="شعار منصة قطفة"
               className="h-14 w-auto object-contain rounded-lg shadow-md"
             />
-            <div>
-              <div className="text-3xl font-extrabold leading-none">قطفة</div>
-              <div className="text-[11px] tracking-[0.24em] text-emerald-200/80 font-bold mt-1">
-                QATFA ADMIN
-              </div>
+            <div className="border-r border-white/20 pr-3 mr-1">
+              <span className="text-[12px] font-bold tracking-[0.2em] bg-white/10 px-2.5 py-1 rounded text-emerald-100">
+                لوحة الإدارة | ADMIN
+              </span>
             </div>
           </div>
 
