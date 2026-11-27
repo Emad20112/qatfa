@@ -146,33 +146,11 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({
       <div>
         {/* Brand Logo Header */}
         <div className="flex flex-col items-center justify-center pt-5 pb-4 px-4">
-          <div className="flex items-center gap-2">
-            {/* Two vibrant green Qat leaves SVG */}
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 32 32"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M15 26C15 17 19 9 28 6C27 15 22 22 15 26Z"
-                fill="#4ADE80"
-              />
-              <path
-                d="M15 26C14 19 9 13 3 12C5 20 9 24 15 26Z"
-                fill="#22C55E"
-              />
-            </svg>
-            <span className="text-[28px] font-extrabold tracking-tight text-white leading-none">
-              قطفة
-            </span>
-          </div>
-          <div className="flex items-center gap-2 mt-1.5 text-[11px] font-bold tracking-[0.22em] text-emerald-100/85">
-            <span className="w-4 h-[1px] bg-emerald-200/40" />
-            <span>QATFA</span>
-            <span className="w-4 h-[1px] bg-emerald-200/40" />
-          </div>
+          <img
+            src="/qatfa_logo.svg"
+            alt="شعار قطفة"
+            className="h-14 w-auto object-contain rounded-lg drop-shadow-md"
+          />
         </div>
 
         {/* Navigation Links */}

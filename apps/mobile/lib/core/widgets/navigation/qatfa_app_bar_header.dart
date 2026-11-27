@@ -77,12 +77,25 @@ class QatfaAppBarHeader extends StatelessWidget {
                     ),
                   ),
 
-                  // شعار قطفة المركزي
+                  // شعار قطفة المركزي الرسمي
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.eco_rounded, color: Color(0xFF4ADE80), size: 22),
-                      const SizedBox(width: AppSpacing.s4),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.asset(
+                          'assets/images/qatfa_logo.png',
+                          height: 28,
+                          width: 38,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.eco_rounded,
+                            color: Color(0xFF4ADE80),
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.s6),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: const [

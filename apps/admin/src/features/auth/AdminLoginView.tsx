@@ -48,17 +48,12 @@ export const AdminLoginView: React.FC = () => {
       {/* Right Decorative Emerald Panel */}
       <div className="hidden lg:flex w-[42%] bg-gradient-to-b from-[#073619] via-[#09401E] to-[#052310] text-white p-12 flex-col justify-between relative overflow-hidden">
         <div className="relative z-10">
-          <div className="flex items-center gap-2.5">
-            <svg width="34" height="34" viewBox="0 0 32 32" fill="none">
-              <path
-                d="M15 26C15 17 19 9 28 6C27 15 22 22 15 26Z"
-                fill="#4ADE80"
-              />
-              <path
-                d="M15 26C14 19 9 13 3 12C5 20 9 24 15 26Z"
-                fill="#22C55E"
-              />
-            </svg>
+          <div className="flex items-center gap-3">
+            <img
+              src="/qatfa_logo.svg"
+              alt="شعار منصة قطفة"
+              className="h-14 w-auto object-contain rounded-lg shadow-md"
+            />
             <div>
               <div className="text-3xl font-extrabold leading-none">قطفة</div>
               <div className="text-[11px] tracking-[0.24em] text-emerald-200/80 font-bold mt-1">
