@@ -19,6 +19,10 @@ void main() {
   group('Seller Presets & Quick Publish Flow Tests', () {
     testWidgets('SellerPresetsScreen renders sections and adds custom item',
         (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       final repo = SellerRepository();
       final vm = SellerPresetsViewModel(repository: repo);
 
@@ -47,6 +51,10 @@ void main() {
     testWidgets(
         'QuickPublishScreen captures WebP photo, enters price, publishes drop, and toggles availability',
         (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       final repo = SellerRepository();
       final vm = QuickPublishViewModel(repository: repo);
 
@@ -99,6 +107,10 @@ void main() {
     testWidgets(
         'BookingsScreen renders tabs, filters cards, and updates summary on cancel',
         (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       final vm = BookingsViewModel(repository: BookingsRepository());
 
       await tester.pumpWidget(
@@ -131,6 +143,10 @@ void main() {
     testWidgets(
         'ProfileScreen renders user details, stats, 8 tiles, heritage footer, and switches role',
         (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       final vm = ProfileViewModel(repository: ProfileRepository());
 
       await tester.pumpWidget(

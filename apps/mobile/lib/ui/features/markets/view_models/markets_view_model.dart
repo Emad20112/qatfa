@@ -43,12 +43,12 @@ class MarketsState {
 
 /// نموذج العرض لإدارة عمليات دليل وخريطة الأسواق
 class MarketsViewModel extends ChangeNotifier {
-  final IMarketsRepository _marketsRepository;
+  final IMarketsRepository marketsRepository;
 
   MarketsState _state = const MarketsState();
   MarketsState get state => _state;
 
-  MarketsViewModel({required this._marketsRepository}) {
+  MarketsViewModel({required this.marketsRepository}) {
     loadMarkets();
   }
 
@@ -57,7 +57,7 @@ class MarketsViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final items = await _marketsRepository.getMarkets(
+      final items = await marketsRepository.getMarkets(
         city: _state.selectedCity,
         query: _state.searchQuery,
       );
@@ -91,6 +91,6 @@ class MarketsViewModel extends ChangeNotifier {
   }
 
   Future<List<StallItem>> getStallsForMarket(String marketId) {
-    return _marketsRepository.getStallsByMarket(marketId);
+    return marketsRepository.getStallsByMarket(marketId);
   }
 }

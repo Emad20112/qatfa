@@ -124,7 +124,7 @@ class _MarketsScreenState extends State<MarketsScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: AppSpacing.ph16,
                   itemCount: QatfaGeoConstants.marketsFilterOptions.length,
-                  separatorBuilder: (_, _) =>
+                  separatorBuilder: (context, index) =>
                       const SizedBox(width: AppSpacing.s8),
                   itemBuilder: (context, index) {
                     final city = QatfaGeoConstants.marketsFilterOptions[index];

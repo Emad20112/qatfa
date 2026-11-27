@@ -115,20 +115,25 @@ class DropGridCard extends StatelessWidget {
                   const SizedBox(height: AppSpacing.s8),
 
                   // السعر بالريال اليمني
-                  Row(
-                    children: [
-                      Text(
-                        '$price ر.ي',
-                        style: AppTypography.priceTagMedium(color: colors.agate),
-                      ),
-                      if (oldPrice != null) ...[
-                        const SizedBox(width: AppSpacing.s6),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Text(
-                          '$oldPrice ر.ي',
-                          style: AppTypography.strikethroughPrice(color: colors.textMuted),
+                          '$price ر.ي',
+                          style: AppTypography.priceTagMedium(color: colors.agate),
                         ),
+                        if (oldPrice != null) ...[
+                          const SizedBox(width: AppSpacing.s6),
+                          Text(
+                            '$oldPrice ر.ي',
+                            style: AppTypography.strikethroughPrice(color: colors.textMuted),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.s10),
 

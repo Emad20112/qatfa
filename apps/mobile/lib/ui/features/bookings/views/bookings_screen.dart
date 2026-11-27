@@ -375,7 +375,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                             vertical: AppSpacing.s4,
                                           ),
                                           itemCount: filtered.length,
-                                          separatorBuilder: (_, __) =>
+                                          separatorBuilder: (_, _) =>
                                               const SizedBox(
                                             height: AppSpacing.s12,
                                           ),

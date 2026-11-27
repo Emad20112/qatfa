@@ -52,13 +52,13 @@ class DropsFeedState {
 /// نموذج العرض لإدارة العمليات المتغيرة لموجز القطفات
 /// يفصل تماماً العمليات والتحميل والفلترة عن الواجهة المرئية
 class DropsFeedViewModel extends ChangeNotifier {
-  final IDropsRepository _dropsRepository;
+  final IDropsRepository dropsRepository;
 
   DropsFeedState _state = const DropsFeedState();
   DropsFeedState get state => _state;
 
   DropsFeedViewModel({
-    required this._dropsRepository,
+    required this.dropsRepository,
     bool autoLoad = true,
   }) {
     if (autoLoad) {
@@ -72,7 +72,7 @@ class DropsFeedViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final items = await _dropsRepository.getDailyDrops(
+      final items = await dropsRepository.getDailyDrops(
         city: _state.selectedCity,
         qatType: _state.selectedQatType,
         query: _state.searchQuery,
@@ -135,7 +135,7 @@ class DropsFeedViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final nextItems = await _dropsRepository.getDailyDrops(
+      final nextItems = await dropsRepository.getDailyDrops(
         city: _state.selectedCity,
         qatType: _state.selectedQatType,
         query: _state.searchQuery,

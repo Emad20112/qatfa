@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/qatfa_constants.dart';
-import '../../../../core/responsive/responsive_layout.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/cards/drop_grid_card.dart';
@@ -215,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: AppSpacing.ph16,
                             itemCount:
                                 QatfaClassificationConstants.qatTypes.length,
-                            separatorBuilder: (_, _) =>
+                            separatorBuilder: (context, index) =>
                                 const SizedBox(width: AppSpacing.s8),
                             itemBuilder: (context, index) {
                               final type =
@@ -363,61 +362,36 @@ class _HomeScreenState extends State<HomeScreen> {
                             AppSpacing.s16,
                             AppSpacing.s16,
                           ),
-                          sliver: ResponsiveLayout(
-                            mobile: (context) => SliverGrid(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.60,
-                                    crossAxisSpacing: AppSpacing.s12,
-                                    mainAxisSpacing: AppSpacing.s12,
-                                  ),
-                              delegate: SliverChildBuilderDelegate((
-                                context,
-                                index,
-                              ) {
-                                final drop = state.drops[index];
-                                return DropGridCard(
-                                  title: drop.title,
-                                  sellerName: drop.sellerName,
-                                  price: '${drop.price}',
-                                  oldPrice: drop.oldPrice != null
-                                      ? '${drop.oldPrice}'
-                                      : null,
-                                  imageUrl: drop.imageUrl,
-                                  phoneNumber: drop.sellerPhone,
-                                  isFresh: drop.isFresh,
-                                  onTap: () => _navigateToDropDetail(drop),
-                                );
-                              }, childCount: state.drops.length),
-                            ),
-                            tablet: (context) => SliverGrid(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    childAspectRatio: 0.65,
-                                    crossAxisSpacing: AppSpacing.s16,
-                                    mainAxisSpacing: AppSpacing.s16,
-                                  ),
-                              delegate: SliverChildBuilderDelegate((
-                                context,
-                                index,
-                              ) {
-                                final drop = state.drops[index];
-                                return DropGridCard(
-                                  title: drop.title,
-                                  sellerName: drop.sellerName,
-                                  price: '${drop.price}',
-                                  oldPrice: drop.oldPrice != null
-                                      ? '${drop.oldPrice}'
-                                      : null,
-                                  imageUrl: drop.imageUrl,
-                                  phoneNumber: drop.sellerPhone,
-                                  isFresh: drop.isFresh,
-                                  onTap: () => _navigateToDropDetail(drop),
-                                );
-                              }, childCount: state.drops.length),
-                            ),
+                          sliver: Builder(
+                            builder: (context) {
+                              final isTablet = MediaQuery.sizeOf(context).width >= 600;
+                              return SliverGrid(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: isTablet ? 3 : 2,
+                                  childAspectRatio: isTablet ? 0.65 : 0.60,
+                                  crossAxisSpacing: isTablet ? AppSpacing.s16 : AppSpacing.s12,
+                                  mainAxisSpacing: isTablet ? AppSpacing.s16 : AppSpacing.s12,
+                                ),
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    final drop = state.drops[index];
+                                    return DropGridCard(
+                                      title: drop.title,
+                                      sellerName: drop.sellerName,
+                                      price: '${drop.price}',
+                                      oldPrice: drop.oldPrice != null
+                                          ? '${drop.oldPrice}'
+                                          : null,
+                                      imageUrl: drop.imageUrl,
+                                      phoneNumber: drop.sellerPhone,
+                                      isFresh: drop.isFresh,
+                                      onTap: () => _navigateToDropDetail(drop),
+                                    );
+                                  },
+                                  childCount: state.drops.length,
+                                ),
+                              );
+                            },
                           ),
                         ),
 

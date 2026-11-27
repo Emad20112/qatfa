@@ -140,24 +140,24 @@ class _SmartBudgetSearchModalState extends State<SmartBudgetSearchModal> {
                 (1.0 + QatfaPerformanceConstants.budgetTolerancePercentage))
             .round();
 
-    return Container(
+    return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.88,
       ),
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.s16,
-        AppSpacing.s12,
-        AppSpacing.s16,
-        bottomInset + AppSpacing.s16,
-      ),
-      decoration: BoxDecoration(
+      child: Material(
         color: colors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.s16,
+            AppSpacing.s12,
+            AppSpacing.s16,
+            bottomInset + AppSpacing.s16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
           // مقبض السحب العلوي (Drag Handle)
           Center(
             child: Container(
@@ -435,31 +435,31 @@ class _SmartBudgetSearchModalState extends State<SmartBudgetSearchModal> {
                   ),
                   const SizedBox(height: AppSpacing.s16),
 
-                  // 5. حالة التوفر
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'المتوفر في السوق الآن فقط',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'استبعاد العروض المنتهية أو المغلقة لتوفير المشوار',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                    value: _availableOnly,
-                    activeThumbColor: colors.primary,
-                    activeTrackColor: colors.primary.withValues(alpha: 0.3),
-                    onChanged: (val) {
-                      setState(() => _availableOnly = val);
-                    },
-                  ),
+          // 5. حالة التوفر
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              'المتوفر في السوق الآن فقط',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: colors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'استبعاد العروض المنتهية أو المغلقة لتوفير المشوار',
+              style: TextStyle(
+                fontSize: 11,
+                color: colors.textSecondary,
+              ),
+            ),
+            value: _availableOnly,
+            activeThumbColor: colors.primary,
+            activeTrackColor: colors.primary.withValues(alpha: 0.3),
+            onChanged: (val) {
+              setState(() => _availableOnly = val);
+            },
+          ),
                 ],
               ),
             ),
@@ -479,6 +479,8 @@ class _SmartBudgetSearchModalState extends State<SmartBudgetSearchModal> {
           ),
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 }
