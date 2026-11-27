@@ -9,6 +9,7 @@ import '../../../../core/widgets/buttons/qatfa_primary_button.dart';
 import '../../../../core/widgets/buttons/qatfa_whatsapp_button.dart';
 import '../../../../core/widgets/chips/qatfa_choice_chip.dart';
 import '../../../../core/widgets/chips/qatfa_status_badge.dart';
+import '../../../../core/widgets/dialogs/qatfa_elegant_dialog.dart';
 import '../../../../data/repositories/seller_repository.dart';
 import '../../../../domain/models/seller_models.dart';
 import '../view_models/quick_publish_view_model.dart';
@@ -97,103 +98,175 @@ class _QuickPublishScreenState extends State<QuickPublishScreen> {
   }
 
   Future<void> _showQuickAddPresetDialog() async {
-    final controller = TextEditingController();
-    PresetCategory selectedCategory = PresetCategory.qatType;
+    final typeController = TextEditingController();
+    final gradeController = TextEditingController();
+    final unitController = TextEditingController();
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: StatefulBuilder(
-            builder: (context, setDialogState) {
-              return AlertDialog(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: AppSpacing.radius20,
-                ),
-                title: const Text(
-                  'إضافة صنف أو نوع جديد للمفرش',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    void disposeControllers() {
+      typeController.dispose();
+      gradeController.dispose();
+      unitController.dispose();
+    }
+
+    List<String> splitInput(String raw) => raw
+        .split(RegExp(r'[,،\n]'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    final stateKey = GlobalKey<State<StatefulWidget>>();
+
+    Widget buildContent(StateSetter setDialogState) {
+      final colors = context.colors;
+      final types = splitInput(typeController.text);
+      final grades = splitInput(gradeController.text);
+      final units = splitInput(unitController.text);
+      final total = types.length + grades.length + units.length;
+
+      return Column(
+        key: stateKey,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          QatfaDialogField(
+            key: const Key('quick_add_type_field'),
+            title: 'نوع القات',
+            hintText: 'مثال: صعدي، مطري، سوتي',
+            icon: Icons.eco_rounded,
+            controller: typeController,
+            onChanged: (_) => setDialogState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.s10),
+          QatfaDialogField(
+            key: const Key('quick_add_grade_field'),
+            title: 'الصنف / الجودة',
+            hintText: 'مثال: رووس، عوارض، قطل',
+            icon: Icons.workspace_premium_rounded,
+            controller: gradeController,
+            onChanged: (_) => setDialogState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.s10),
+          QatfaDialogField(
+            key: const Key('quick_add_unit_field'),
+            title: 'وحدة البيع',
+            hintText: 'مثال: حبة، كيلو، قبضة',
+            icon: Icons.scale_rounded,
+            controller: unitController,
+            optionalBadge: 'اختياري',
+            onChanged: (_) => setDialogState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            child: total == 0
+                ? Row(
+                    key: const ValueKey('empty'),
                     children: [
-                      Wrap(
-                        spacing: AppSpacing.s8,
-                        runSpacing: AppSpacing.s8,
-                        children: [
-                          QatfaChoiceChip(
-                            label: 'نوع',
-                            isSelected:
-                                selectedCategory == PresetCategory.qatType,
-                            onSelected: (_) => setDialogState(
-                              () => selectedCategory = PresetCategory.qatType,
-                            ),
-                          ),
-                          QatfaChoiceChip(
-                            label: 'صنف',
-                            isSelected:
-                                selectedCategory == PresetCategory.qualityGrade,
-                            onSelected: (_) => setDialogState(
-                              () =>
-                                  selectedCategory = PresetCategory.qualityGrade,
-                            ),
-                          ),
-                          QatfaChoiceChip(
-                            label: 'وحدة',
-                            isSelected:
-                                selectedCategory == PresetCategory.saleUnit,
-                            onSelected: (_) => setDialogState(
-                              () => selectedCategory = PresetCategory.saleUnit,
-                            ),
-                          ),
-                        ],
+                      Icon(
+                        Icons.edit_note_rounded,
+                        size: 15,
+                        color: colors.textMuted,
                       ),
-                      const SizedBox(height: AppSpacing.s12),
-                      TextField(
-                        controller: controller,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          labelText: 'الاسم الجديد',
-                          hintText: 'مثال: صعدي، فاخر، ربطة',
-                          border: OutlineInputBorder(
-                            borderRadius: AppSpacing.radius12,
+                      const SizedBox(width: AppSpacing.s4),
+                      Expanded(
+                        child: Text(
+                          'املأ حقلاً واحداً على الأقل. يمكن إضافة أكثر من اسم بالفصل بفاصلة.',
+                          style: TextStyle(
+                            fontSize: 11,
+                            height: 1.4,
+                            color: colors.textMuted,
                           ),
                         ),
                       ),
                     ],
+                  )
+                : Container(
+                    key: const ValueKey('ready'),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s12,
+                      vertical: AppSpacing.s8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      borderRadius: AppSpacing.radiusFull,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 15,
+                          color: colors.primary,
+                        ),
+                        const SizedBox(width: AppSpacing.s6),
+                        Flexible(
+                          child: Text(
+                            'جاهز لإضافة $total عنصر إلى قائمتك السريعة',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                              color: colors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(false),
-                    child: const Text('إلغاء'),
-                  ),
-                  FilledButton(
-                    onPressed: () {
-                      if (controller.text.trim().isNotEmpty) {
-                        Navigator.of(dialogContext).pop(true);
-                      }
-                    },
-                    child: const Text('إضافة فوراً'),
-                  ),
-                ],
-              );
-            },
           ),
+        ],
+      );
+    }
+
+    final confirmed = await showQatfaElegantDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (stateContext, setDialogState) {
+            return QatfaElegantDialog(
+              title: 'إضافة عنصر للقائمة السريعة',
+              subtitle: 'أضف النوع والصنف والوحدة مرة واحدة، وستظهر فوراً في نافذة النشر السريع.',
+              headerIcon: Icons.playlist_add_rounded,
+              confirmLabel: 'إضافة فوراً',
+              confirmIcon: Icons.bolt_rounded,
+              hintText: 'الفصل بفاصلة يضيف عدة عناصر دفعة واحدة.',
+              child: buildContent(setDialogState),
+              // إغلاق آمن: نغلق الحوار أولاً ثم ننظف الموارد في الإطار التالي
+              // لمنع أي تحديث على ويدجت تم التخلص منه (سبب التجمد السابق).
+              onCancel: () {
+                Navigator.of(dialogContext).pop(false);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  disposeControllers();
+                });
+              },
+              onConfirm: () {
+                final hasAny = splitInput(typeController.text).isNotEmpty ||
+                    splitInput(gradeController.text).isNotEmpty ||
+                    splitInput(unitController.text).isNotEmpty;
+                if (!hasAny) return;
+                Navigator.of(dialogContext).pop(true);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  disposeControllers();
+                });
+              },
+            );
+          },
         );
       },
     );
 
-    if (confirmed == true && controller.text.trim().isNotEmpty) {
-      await _viewModel.addCustomPresetFromQuickSheet(
-        category: selectedCategory,
-        label: controller.text.trim(),
+    if (confirmed == true) {
+      final types = splitInput(typeController.text);
+      final grades = splitInput(gradeController.text);
+      final units = splitInput(unitController.text);
+      typeController.text = '';
+      gradeController.text = '';
+      unitController.text = '';
+      await _viewModel.addCustomPresetItems(
+        qatTypes: types,
+        qualityGrades: grades,
+        saleUnits: units,
       );
     }
-    controller.dispose();
   }
 
   Future<void> _handlePublish() async {

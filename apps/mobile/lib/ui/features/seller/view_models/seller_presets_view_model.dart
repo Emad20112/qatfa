@@ -92,6 +92,50 @@ class SellerPresetsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// إضافة عدة عناصر (نوع / صنف / وحدة) دفعة واحدة من النافذة الأنيقة
+  Future<void> addCustomItems({
+    Iterable<String> qatTypes = const [],
+    Iterable<String> qualityGrades = const [],
+    Iterable<String> saleUnits = const [],
+  }) async {
+    final current = _presets;
+    if (current != null) {
+      await _repository.savePresets(current);
+    }
+
+    for (final label in qatTypes) {
+      if (label.trim().isNotEmpty) {
+        _presets = await _repository.addCustomPresetItem(
+          category: PresetCategory.qatType,
+          label: label,
+        );
+      }
+    }
+    for (final label in qualityGrades) {
+      if (label.trim().isNotEmpty) {
+        _presets = await _repository.addCustomPresetItem(
+          category: PresetCategory.qualityGrade,
+          label: label,
+        );
+      }
+    }
+    for (final label in saleUnits) {
+      if (label.trim().isNotEmpty) {
+        _presets = await _repository.addCustomPresetItem(
+          category: PresetCategory.saleUnit,
+          label: label,
+        );
+      }
+    }
+
+    final total =
+        qatTypes.length + qualityGrades.length + saleUnits.length;
+    _statusMessage = total > 1
+        ? 'تمت إضافة $total عناصر وتحديدها في قوائمك السريعة'
+        : 'تمت إضافة العنصر وتحديده في قوائمك السريعة';
+    notifyListeners();
+  }
+
   Future<bool> savePresets() async {
     final current = _presets;
     if (current == null) return false;

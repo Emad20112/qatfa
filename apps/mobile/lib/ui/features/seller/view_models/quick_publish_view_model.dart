@@ -196,21 +196,33 @@ class QuickPublishViewModel extends ChangeNotifier {
   }) async {
     final trimmed = label.trim();
     if (trimmed.isEmpty) return;
-    _presets = await _repository.addCustomPresetItem(
-      category: category,
-      label: trimmed,
-    );
     switch (category) {
       case PresetCategory.qatType:
-        _selectedType = trimmed;
+        await addCustomPresetItems(qatTypes: [trimmed]);
         break;
       case PresetCategory.qualityGrade:
-        _selectedGrade = trimmed;
+        await addCustomPresetItems(qualityGrades: [trimmed]);
         break;
       case PresetCategory.saleUnit:
-        _selectedUnit = trimmed;
+        await addCustomPresetItems(saleUnits: [trimmed]);
         break;
     }
+  }
+
+  /// إضافة عدة عناصر (نوع / صنف / وحدة) دفعة واحدة من النافذة الأنيقة
+  Future<void> addCustomPresetItems({
+    Iterable<String> qatTypes = const [],
+    Iterable<String> qualityGrades = const [],
+    Iterable<String> saleUnits = const [],
+  }) async {
+    _presets = await _repository.addCustomPresetItems(
+      qatTypes: qatTypes,
+      qualityGrades: qualityGrades,
+      saleUnits: saleUnits,
+    );
+    if (qatTypes.isNotEmpty) _selectedType = qatTypes.first.trim();
+    if (qualityGrades.isNotEmpty) _selectedGrade = qualityGrades.first.trim();
+    if (saleUnits.isNotEmpty) _selectedUnit = saleUnits.first.trim();
     notifyListeners();
   }
 

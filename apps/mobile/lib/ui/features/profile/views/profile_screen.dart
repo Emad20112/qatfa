@@ -682,8 +682,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: AppSpacing.s16),
             QatfaPrimaryButton(
-              label: 'إعادة الدخول للحساب',
+              label: 'تسجيل الدخول برقم الهاتف (OTP)',
+              onPressed: () {
+                Navigator.of(context).pushNamed('/login');
+              },
+            ),
+            const SizedBox(height: AppSpacing.s10),
+            TextButton(
               onPressed: _viewModel.restoreDemoSession,
+              child: const Text('أو استعادة الجلسة التجريبية'),
             ),
           ],
         ),

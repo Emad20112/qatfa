@@ -49,6 +49,46 @@ class SellerRepository {
     }
   }
 
+  /// إضافة عدة أنواع/أصناف/وحدات دفعة واحدة من نافذة الإضافة السريعة
+  Future<SellerPresets> addCustomPresetItems({
+    Iterable<String> qatTypes = const [],
+    Iterable<String> qualityGrades = const [],
+    Iterable<String> saleUnits = const [],
+  }) async {
+    final current = await _service.fetchPresets();
+
+    List<String> merged(List<String> source, Iterable<String> incoming) {
+      final result = List<String>.from(source);
+      for (final raw in incoming) {
+        final value = raw.trim();
+        if (value.isEmpty) continue;
+        if (!result.contains(value)) result.insert(0, value);
+      }
+      return result;
+    }
+
+    final availableTypes = merged(current.availableTypes, qatTypes);
+    final availableGrades = merged(current.availableGrades, qualityGrades);
+    final availableUnits = merged(current.availableUnits, saleUnits);
+
+    if (availableTypes.isEmpty || availableGrades.isEmpty) {
+      return current;
+    }
+
+    return _service.savePresets(
+      current.copyWith(
+        availableTypes: availableTypes,
+        selectedTypes: merged(current.selectedTypes, qatTypes),
+        availableGrades: availableGrades,
+        selectedGrades: merged(current.selectedGrades, qualityGrades),
+        availableUnits: availableUnits,
+        selectedUnits: availableUnits.isEmpty
+            ? current.selectedUnits
+            : merged(current.selectedUnits, saleUnits),
+      ),
+    );
+  }
+
   Future<bool> getMasterStoreOpen() => _service.fetchMasterStoreOpen();
 
   Future<bool> setMasterStoreOpen(bool isOpen) =>

@@ -101,6 +101,90 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+        'Quick add preset dialog shows three vertical fields and cancel closes safely',
+        (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final repo = SellerRepository();
+      final vm = QuickPublishViewModel(repository: repo);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: QuickPublishScreen(viewModel: vm, repository: repo),
+        ),
+      );
+      await tester.pump();
+
+      final addBtn = find.text('إضافة نوع / صنف');
+      await tester.ensureVisible(addBtn);
+      await tester.tap(addBtn);
+      await tester.pumpAndSettle();
+
+      // ثلاثة حقول عمودية أنيقة
+      expect(find.byKey(const Key('quick_add_type_field')), findsOneWidget);
+      expect(find.byKey(const Key('quick_add_grade_field')), findsOneWidget);
+      expect(find.byKey(const Key('quick_add_unit_field')), findsOneWidget);
+      expect(find.text('إضافة عنصر للقائمة السريعة'), findsOneWidget);
+
+      // الإلغاء يجب ألا يجمّد الشاشة ويغلق النافذة بأمان
+      await tester.tap(find.byKey(const Key('elegant_dialog_cancel')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('quick_add_type_field')), findsNothing);
+      expect(find.text('نشر قطفة اليوم السريعة'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Quick add preset dialog adds all filled fields at once',
+        (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final repo = SellerRepository();
+      final vm = QuickPublishViewModel(repository: repo);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: QuickPublishScreen(viewModel: vm, repository: repo),
+        ),
+      );
+      await tester.pump();
+
+      final addBtn = find.text('إضافة نوع / صنف');
+      await tester.ensureVisible(addBtn);
+      await tester.tap(addBtn);
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('quick_add_type_field')),
+        'مطري, سوتي',
+      );
+      await tester.enterText(
+        find.byKey(const Key('quick_add_grade_field')),
+        'فاخر',
+      );
+      await tester.enterText(
+        find.byKey(const Key('quick_add_unit_field')),
+        'ربطة',
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('elegant_dialog_confirm')));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      final presets = await repo.getPresets();
+      expect(presets.availableTypes, containsAll(['مطري', 'سوتي']));
+      expect(presets.availableGrades, contains('فاخر'));
+      expect(presets.availableUnits, contains('ربطة'));
+    });
   });
 
   group('BookingsScreen Tests', () {

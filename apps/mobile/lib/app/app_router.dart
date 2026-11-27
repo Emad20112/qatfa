@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../data/models/qatfa_models.dart';
+import '../ui/features/auth/views/login_screen.dart';
+import '../ui/features/auth/views/otp_verification_screen.dart';
+import '../ui/features/auth/view_models/auth_view_model.dart';
 import '../ui/features/bookings/views/bookings_screen.dart';
 import '../ui/features/drop_detail/views/drop_detail_screen.dart';
 import '../ui/features/profile/views/profile_screen.dart';
@@ -18,11 +21,21 @@ class AppRouter {
   static const String presets = '/seller-presets';
   static const String bookings = '/bookings';
   static const String profile = '/profile';
+  static const String login = '/login';
+  static const String otpVerification = '/otp-verification';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
         return MaterialPageRoute(builder: (_) => const MainShellScreen());
+      case login:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case otpVerification:
+        final vm = settings.arguments as AuthViewModel?;
+        if (vm != null) {
+          return MaterialPageRoute(builder: (_) => OtpVerificationScreen(viewModel: vm));
+        }
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       case quickPublish:
         return MaterialPageRoute(builder: (_) => const QuickPublishScreen());
       case presets:

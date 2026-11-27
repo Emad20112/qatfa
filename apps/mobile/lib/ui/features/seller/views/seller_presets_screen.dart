@@ -4,7 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/qatfa_icon_button.dart';
 import '../../../../core/widgets/chips/qatfa_choice_chip.dart';
-import '../../../../domain/models/seller_models.dart';
+import '../../../../core/widgets/dialogs/qatfa_elegant_dialog.dart';
 import '../view_models/seller_presets_view_model.dart';
 
 /// شاشة إعداد القوائم السريعة المسبقة للمقاوتي (FR-STORE-08 / Flow 3.3)
@@ -54,107 +54,120 @@ class _SellerPresetsScreenState extends State<SellerPresetsScreen>
   }
 
   Future<void> _showAddCustomItemDialog() async {
-    final controller = TextEditingController();
-    PresetCategory selectedCategory = PresetCategory.qatType;
+    final typeController = TextEditingController();
+    final gradeController = TextEditingController();
+    final unitController = TextEditingController();
 
-    final result = await showDialog<bool>(
+    void disposeControllers() {
+      typeController.dispose();
+      gradeController.dispose();
+      unitController.dispose();
+    }
+
+    List<String> splitInput(String raw) => raw
+        .split(RegExp(r'[,،\n]'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    Widget buildContent(StateSetter setDialogState) {
+      final colors = context.colors;
+      final total = splitInput(typeController.text).length +
+          splitInput(gradeController.text).length +
+          splitInput(unitController.text).length;
+
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          QatfaDialogField(
+            title: 'نوع قات',
+            hintText: 'مثال: صعدي، مطري، سوتي',
+            icon: Icons.eco_rounded,
+            controller: typeController,
+            onChanged: (_) => setDialogState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.s10),
+          QatfaDialogField(
+            title: 'صنف / جودة',
+            hintText: 'مثال: رووس، عوارض، قطل',
+            icon: Icons.workspace_premium_rounded,
+            controller: gradeController,
+            onChanged: (_) => setDialogState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.s10),
+          QatfaDialogField(
+            title: 'وحدة بيع',
+            hintText: 'مثال: حبة، كيلو، قبضة',
+            icon: Icons.scale_rounded,
+            controller: unitController,
+            optionalBadge: 'اختياري',
+            onChanged: (_) => setDialogState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          Text(
+            total == 0
+                ? 'املأ حقلاً واحداً على الأقل، ويمكن الفصل بفاصلة لإضافة عدة أسماء.'
+                : 'سيتم إضافة $total عنصر وتحديدها في قوائمك السريعة.',
+            style: TextStyle(
+              fontSize: 11.5,
+              height: 1.4,
+              fontWeight: FontWeight.w600,
+              color: total == 0 ? colors.textMuted : colors.primary,
+            ),
+          ),
+        ],
+      );
+    }
+
+    final result = await showQatfaElegantDialog<bool>(
       context: context,
       builder: (dialogContext) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: StatefulBuilder(
-            builder: (context, setDialogState) {
-              return AlertDialog(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: AppSpacing.radius20,
-                ),
-                title: const Text(
-                  'إضافة عنصر مخصص للقائمة',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'اختر التصنيف:',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: AppSpacing.s8),
-                      Wrap(
-                        spacing: AppSpacing.s8,
-                        runSpacing: AppSpacing.s8,
-                        children: [
-                          QatfaChoiceChip(
-                            label: 'نوع قات',
-                            isSelected: selectedCategory == PresetCategory.qatType,
-                            onSelected: (_) => setDialogState(
-                              () => selectedCategory = PresetCategory.qatType,
-                            ),
-                          ),
-                          QatfaChoiceChip(
-                            label: 'صنف / جودة',
-                            isSelected:
-                                selectedCategory == PresetCategory.qualityGrade,
-                            onSelected: (_) => setDialogState(
-                              () =>
-                                  selectedCategory = PresetCategory.qualityGrade,
-                            ),
-                          ),
-                          QatfaChoiceChip(
-                            label: 'وحدة بيع',
-                            isSelected:
-                                selectedCategory == PresetCategory.saleUnit,
-                            onSelected: (_) => setDialogState(
-                              () => selectedCategory = PresetCategory.saleUnit,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.s16),
-                      TextField(
-                        controller: controller,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          labelText: 'اسم العنصر الجديد',
-                          hintText: 'مثال: مطري، سوتي، ربطة...',
-                          border: OutlineInputBorder(
-                            borderRadius: AppSpacing.radius12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(false),
-                    child: const Text('إلغاء'),
-                  ),
-                  FilledButton(
-                    onPressed: () {
-                      if (controller.text.trim().isNotEmpty) {
-                        Navigator.of(dialogContext).pop(true);
-                      }
-                    },
-                    child: const Text('إضافة وتحديد'),
-                  ),
-                ],
-              );
-            },
-          ),
+        return StatefulBuilder(
+          builder: (stateContext, setDialogState) {
+            return QatfaElegantDialog(
+              title: 'إضافة عنصر مخصص للقائمة',
+              subtitle: 'أضف النوع والصنف والوحدة دفعة واحدة لتصبح جاهزة في نافذة النشر السريع.',
+              headerIcon: Icons.playlist_add_rounded,
+              confirmLabel: 'إضافة وتحديد',
+              hintText: 'الفصل بفاصلة يضيف أكثر من عنصر في الحقل نفسه.',
+              child: buildContent(setDialogState),
+              // الإغلاق الآمن: نغلق النافذة أولاً ثم نحرر الموارد في الإطار التالي
+              onCancel: () {
+                Navigator.of(dialogContext).pop(false);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  disposeControllers();
+                });
+              },
+              onConfirm: () {
+                final hasAny = splitInput(typeController.text).isNotEmpty ||
+                    splitInput(gradeController.text).isNotEmpty ||
+                    splitInput(unitController.text).isNotEmpty;
+                if (!hasAny) return;
+                Navigator.of(dialogContext).pop(true);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  disposeControllers();
+                });
+              },
+            );
+          },
         );
       },
     );
 
-    if (result == true && controller.text.trim().isNotEmpty) {
-      await _viewModel.addCustomItem(
-        category: selectedCategory,
-        label: controller.text.trim(),
+    if (result == true) {
+      final types = splitInput(typeController.text);
+      final grades = splitInput(gradeController.text);
+      final units = splitInput(unitController.text);
+      typeController.text = '';
+      gradeController.text = '';
+      unitController.text = '';
+      await _viewModel.addCustomItems(
+        qatTypes: types,
+        qualityGrades: grades,
+        saleUnits: units,
       );
     }
-    controller.dispose();
   }
 
   Future<void> _handleSave() async {
