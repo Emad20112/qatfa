@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Matches } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Matches, MinLength } from "class-validator";
 
 export class RequestOtpDto {
   @IsNotEmpty({ message: "رقم الهاتف مطلوب" })
@@ -7,6 +7,11 @@ export class RequestOtpDto {
     message: "يرجى إدخال رقم هاتف يمني صحيح (مثال: +967771234567 أو 771234567)",
   })
   phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(2, { message: "الاسم يجب أن يحتوي على حرفين على الأقل" })
+  fullName?: string;
 }
 
 export class VerifyOtpDto {
@@ -17,4 +22,8 @@ export class VerifyOtpDto {
   @IsNotEmpty({ message: "رمز التحقق مطلوب" })
   @IsString()
   code: string;
+
+  @IsOptional()
+  @IsString()
+  fullName?: string;
 }

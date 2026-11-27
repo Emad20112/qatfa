@@ -25,6 +25,7 @@ import { District } from "../../database/entities/district.entity";
 import { Market } from "../../database/entities/market.entity";
 import { AppVersion } from "../../database/entities/app-version.entity";
 import { Report } from "../../database/entities/report.entity";
+import { AuthService } from "../auth/auth.service";
 
 export interface VerificationRequestRecord {
   id: string;
@@ -537,7 +538,12 @@ export class AdminService {
     @InjectRepository(AppVersion)
     private readonly versionRepository: Repository<AppVersion>,
     private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
   ) {}
+
+  getOtpLogs() {
+    return this.authService.getOtpLogs();
+  }
 
   private hashPassword(password: string): string {
     const salt = randomBytes(16).toString("hex");

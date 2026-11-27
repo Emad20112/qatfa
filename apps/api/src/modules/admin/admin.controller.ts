@@ -42,6 +42,25 @@ export class AdminController {
     return this.adminService.loginAdmin(password);
   }
 
+  @Public()
+  @Get("auth/otp-logs")
+  getPublicOtpLogs() {
+    return {
+      message: "سجل رموز التحقق (OTP) للتجربة والمراقبة",
+      data: this.adminService.getOtpLogs(),
+    };
+  }
+
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MODERATOR)
+  @Get("otp-logs")
+  getOtpLogs() {
+    return {
+      message: "سجل رموز التحقق (OTP) للمشرفين",
+      data: this.adminService.getOtpLogs(),
+    };
+  }
+
   @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)
   @Get("dashboard")
