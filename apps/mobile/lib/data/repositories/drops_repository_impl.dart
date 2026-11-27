@@ -78,7 +78,7 @@ class DropsRepositoryImpl implements IDropsRepository {
           'budget': budget,
           'tolerance': tolerance,
           if (qatType != null && qatType != 'الكل') 'qatType': qatType,
-          if (marketId != null) 'marketId': marketId,
+          ?marketId: marketId,
         },
         cancelToken: cancelToken,
       );

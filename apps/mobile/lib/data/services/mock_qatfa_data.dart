@@ -195,6 +195,8 @@ class MockQatfaData {
     ),
   ];
 
+  static List<MarketItem> get initialMarkets => markets;
+
   static final List<MarketItem> markets = [
     const MarketItem(
       id: 'm_1',
